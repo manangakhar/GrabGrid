@@ -1,8 +1,11 @@
 package com.example.grabgrid;
 
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -21,7 +24,6 @@ public class GrabGridActivity extends AppCompatActivity {
     private static final int BOX_DPI = 45;
     private static final int ROWS = 9;
     private static final int COLS = 9;
-    ImageView[][] imageGrid = new ImageView[ROWS][COLS];
     public static Grid grid;
 
     @Override
@@ -32,10 +34,10 @@ public class GrabGridActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (null == grid) {
-            grid = new Grid();
-            renderGrid(grid);
-        }
+        final LinearLayout linearLayoutGrid = findViewById(R.id.gridId);
+        linearLayoutGrid.invalidate();
+        grid = new Grid();
+        renderGrid(grid);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -43,9 +45,24 @@ public class GrabGridActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+//                ImageView imageView = imageGrid[0][0];
+//                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.bounce);
+//                animation.setRepeatCount(Animation.INFINITE);
+//                imageView.setAnimation(animation);
+//                imageView.startAnimation(animation);
+//                ImageView viewById = (ImageView) findViewById(R.id.sonic);
+//                AnimationDrawable d = (AnimationDrawable) viewById.getDrawable();
+//                d.start();
+                modifyPosition(new Position(2, 0), BoxType.VISITED);
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void modifyPosition(Position position, BoxType boxType) {
+        GridSpot gridSpot = grid.getGridSpot(position);
+        gridSpot.setBoxType(boxType);
+        gridSpot.getImageView().setImageResource(getImageForBox(gridSpot));
     }
 
     public void renderGrid(Grid inputGrid) {
@@ -64,9 +81,10 @@ public class GrabGridActivity extends AppCompatActivity {
                 ImageView imageView = new ImageView(getApplicationContext());
                 ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams((int) (BOX_DPI * factor), (int) (BOX_DPI * factor));
                 imageView.setLayoutParams(layoutParams);
-                imageView.setImageResource(getImageForBox(inputGrid.getGridSpot(new Position(row, col))));
+                GridSpot gridSpot = inputGrid.getGridSpot(new Position(row, col));
+                imageView.setImageResource(getImageForBox(gridSpot));
                 // set the image grid
-                imageGrid[row][col] = imageView;
+                gridSpot.setImageView(imageView);
                 // add column to row
                 linearLayoutRow.addView(imageView);
             }
@@ -78,9 +96,13 @@ public class GrabGridActivity extends AppCompatActivity {
     private int getImageForBox(GridSpot gridSpot) {
         switch (gridSpot.getBoxType()) {
             case START:
-                return R.mipmap.ic_launcher_round;
+                return R.drawable.tile018;
             case UNVISITED_END:
-                return R.mipmap.ic_launcher;
+                return R.drawable.unvisited;
+            case UNVISITED:
+                return R.drawable.unvisited;
+            case VISITED:
+                return R.drawable.visited;
             case UP:
                 return R.drawable.arrow_up;
             case DOWN:
@@ -89,6 +111,16 @@ public class GrabGridActivity extends AppCompatActivity {
                 return R.drawable.arrow_left;
             case RIGHT:
                 return R.drawable.arrow_right;
+            case PAY:
+                return R.drawable.pay;
+            case TRANSPORT:
+                return R.drawable.transport;
+            case FOOD:
+                return R.drawable.food;
+            case MOVIE:
+                return R.drawable.movie;
+            case OPTION:
+                return R.drawable.option;
             case BLANK:
                 return 0;
             default:
@@ -124,6 +156,7 @@ public class GrabGridActivity extends AppCompatActivity {
     @Data
     public static class GridSpot {
         private BoxType boxType;
+        private ImageView imageView;
     }
 
     @Data

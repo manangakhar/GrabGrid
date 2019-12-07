@@ -9,11 +9,23 @@
     tools:showIn="@layout/activity_grab_grid">
 
     <LinearLayout
-        android:id="@+id/gridId"
+        android:id="@+id/parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
+        <LinearLayout
+            android:id="@+id/gridId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/sonic"
+            android:visibility="gone"
+            android:src="@drawable/walk_up"
+            />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

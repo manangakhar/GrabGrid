@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <animation-list android:oneshot="true">
+        <item android:drawable="@drawable/tile009" android:duration="200" />
+        <item android:drawable="@drawable/tile010" android:duration="200" />
+        <item android:drawable="@drawable/tile011" android:duration="200" />
+        <item android:drawable="@drawable/tile012" android:duration="200" />
+        <item android:drawable="@drawable/tile013" android:duration="200" />
+        <item android:drawable="@drawable/tile014" android:duration="200" />
+        <item android:drawable="@drawable/tile015" android:duration="200" />
+        <item android:drawable="@drawable/tile016" android:duration="200" />
+        <item android:drawable="@drawable/tile017" android:duration="200" />
+    </animation-list>
+</selector>
