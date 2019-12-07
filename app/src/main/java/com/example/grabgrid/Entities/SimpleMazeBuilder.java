@@ -90,7 +90,7 @@ public class SimpleMazeBuilder implements MazeBuilder {
         boxes[0][2].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(0).build()));
         boxes[2][2].setNeighbours(Arrays.asList(Coordinate.builder().row(2).column(0).build(),
                 Coordinate.builder().row(0).column(2).build()));
-        boxes[4][2].setNeighbours(Arrays.asList(Coordinate.builder().row(4).column(2).build(),
+        boxes[4][2].setNeighbours(Arrays.asList(Coordinate.builder().row(4).column(0).build(),
                 Coordinate.builder().row(2).column(2).build(),
                 Coordinate.builder().row(6).column(2).build()));
         boxes[6][2].setNeighbours(Arrays.asList(Coordinate.builder().row(6).column(0).build(),
@@ -98,14 +98,17 @@ public class SimpleMazeBuilder implements MazeBuilder {
         boxes[8][2].setNeighbours(Arrays.asList(Coordinate.builder().row(8).column(0).build()));
 
         // mid column
-        boxes[0][4].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(2).build()));
+        boxes[0][4].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(2).build(),
+                Coordinate.builder().row(0).column(6).build()));
         boxes[2][4].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(4).build(),
-                Coordinate.builder().row(2).column(2).build()));
+                Coordinate.builder().row(2).column(2).build(),
+                Coordinate.builder().row(2).column(6).build()));
         boxes[4][4].setNeighbours(Arrays.asList(Coordinate.builder().row(4).column(2).build(),
                 Coordinate.builder().row(4).column(6).build(),
                 Coordinate.builder().row(6).column(4).build(),
                 Coordinate.builder().row(2).column(4).build()));
         boxes[6][4].setNeighbours(Arrays.asList(Coordinate.builder().row(6).column(2).build(),
+                Coordinate.builder().row(6).column(6).build(),
                 Coordinate.builder().row(8).column(4).build()));
         boxes[8][4].setNeighbours(Arrays.asList(Coordinate.builder().row(8).column(2).build(),
                 Coordinate.builder().row(8).column(6).build()));
