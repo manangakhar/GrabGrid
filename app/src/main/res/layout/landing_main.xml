@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_landingpage"
+    android:background="#FCFCFC"
+    tools:context=".LandingPageActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:src="@drawable/paymentmethods" />
+
+        <com.jaredrummler.materialspinner.MaterialSpinner
+            android:layout_marginTop="50dp"
+            android:id="@+id/coutrySpinner"
+            android:backgroundTint="#26A96C"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/country_prompt"
+            android:textColorHint="@android:color/black"
+            android:textColor="@android:color/black"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"/>
+
+        <com.jaredrummler.materialspinner.MaterialSpinner
+            android:layout_marginTop="20dp"
+            android:id="@+id/serviceSpinner"
+            android:backgroundTint="#26A96C"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textColorHint="@android:color/black"
+            android:textColor="@android:color/black"
+            android:hint="@string/service_prompt"/>
+
+        <EditText
+            android:id="@+id/amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/box"
+            android:hint="Amount"/>
+
+        <Button
+            android:layout_marginTop="25dp"
+            android:id="@+id/payBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:ems="11"
+            android:drawableLeft="@drawable/credit"
+            android:paddingLeft="140dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="150dp"
+            android:textColor="@android:color/white"
+            android:theme="@style/ColoredButton"
+            android:background="?attr/colorPrimary"
+            android:gravity="center"
+            android:text="Pay"/>
+
+    </LinearLayout>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,7 @@ package com.example.grabgrid;
 
 import static com.example.grabgrid.BoxType.*;
 
-public class Constants {
+public class Utils {
 
     public static final BoxType[][] initialGrid = new BoxType[][]
             {

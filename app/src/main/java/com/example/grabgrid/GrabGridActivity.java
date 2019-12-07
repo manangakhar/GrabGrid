@@ -138,7 +138,7 @@ public class GrabGridActivity extends AppCompatActivity {
             this.rows = GRID_LENGTH;
             this.cols = GRID_LENGTH;
             gridSpots = new GridSpot[rows][cols];
-            BoxType[][] initialGrid = Constants.initialGrid;
+            BoxType[][] initialGrid = Utils.initialGrid;
             for (int row = 0; row < rows; row++) {
                 for (int col = 0; col < cols; col++) {
                     GridSpot gridSpot = new GridSpot();
