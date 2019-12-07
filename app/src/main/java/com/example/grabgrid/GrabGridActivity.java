@@ -1,15 +1,17 @@
 package com.example.grabgrid;
 
-import android.graphics.drawable.AnimationDrawable;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,6 +27,7 @@ public class GrabGridActivity extends AppCompatActivity {
     private static final int ROWS = 9;
     private static final int COLS = 9;
     public static Grid grid;
+    public ImageOnClickListener imageOnClickListener = new ImageOnClickListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +81,12 @@ public class GrabGridActivity extends AppCompatActivity {
             // create each column in row
             for (int col = 0; col < COLS; col++) {
                 // create image per box
-                ImageView imageView = new ImageView(getApplicationContext());
+                ImageView imageView = new ImageView(getApplicationContext(), new Position(row, col));
                 ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams((int) (BOX_DPI * factor), (int) (BOX_DPI * factor));
                 imageView.setLayoutParams(layoutParams);
                 GridSpot gridSpot = inputGrid.getGridSpot(new Position(row, col));
                 imageView.setImageResource(getImageForBox(gridSpot));
+                imageView.setOnClickListener(imageOnClickListener);
                 // set the image grid
                 gridSpot.setImageView(imageView);
                 // add column to row
@@ -90,6 +94,18 @@ public class GrabGridActivity extends AppCompatActivity {
             }
             // add row to main layout
             linearLayoutGrid.addView(linearLayoutRow);
+        }
+    }
+
+    public class ImageOnClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            if (!(v instanceof ImageView)) {
+                throw new UnsupportedOperationException("unexpected click");
+            }
+            ImageView imageView = (ImageView) v;
+            Toast.makeText(getApplicationContext(), ((ImageView) v).getPosition().toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -164,6 +180,20 @@ public class GrabGridActivity extends AppCompatActivity {
     public class Position {
         private final int x;
         private final int y;
+    }
+
+    public class ImageView extends AppCompatImageView {
+
+        private final Position position;
+
+        public ImageView(Context context, Position position) {
+            super(context);
+            this.position = position;
+        }
+
+        public Position getPosition() {
+            return position;
+        }
     }
 
 }

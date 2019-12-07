@@ -20,7 +20,7 @@
         android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/login"></ImageView>
+        app:srcCompat="@drawable/login"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"

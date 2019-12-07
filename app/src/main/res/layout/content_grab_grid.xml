@@ -24,7 +24,7 @@
             android:layout_height="100dp"
             android:id="@+id/sonic"
             android:visibility="gone"
-            android:src="@drawable/walk_up"
+            app:srcCompat="@drawable/walk_up"
             />
     </LinearLayout>
 

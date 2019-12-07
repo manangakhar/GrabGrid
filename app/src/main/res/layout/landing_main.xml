@@ -20,7 +20,7 @@
             android:layout_marginTop="30dp"
             android:layout_width="wrap_content"
             android:layout_height="64dp"
-            android:src="@drawable/paymentmethods" />
+            app:srcCompat="@drawable/paymentmethods" />
 
         <com.jaredrummler.materialspinner.MaterialSpinner
             android:layout_marginTop="50dp"
