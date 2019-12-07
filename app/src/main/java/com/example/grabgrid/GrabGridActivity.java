@@ -1,6 +1,10 @@
 package com.example.grabgrid;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
@@ -9,18 +13,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.grabgrid.Entities.Box;
+import com.example.grabgrid.Entities.Coordinate;
 import com.example.grabgrid.Entities.Maze;
 import com.example.grabgrid.Entities.Size;
 import com.example.grabgrid.Enums.BoxType;
 import com.example.grabgrid.Enums.MazeType;
+import com.example.grabgrid.Event.ClickEvent;
+import com.example.grabgrid.Event.Event;
+import com.example.grabgrid.Event.UnvisitedNeighborsEvent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,7 +41,8 @@ public class GrabGridActivity extends AppCompatActivity {
     private static final int ROWS = 9;
     private static final int COLS = 9;
     public static Grid grid;
-    public ImageOnClickListener imageOnClickListener = new ImageOnClickListener();
+    private ImageOnClickListener imageOnClickListener = new ImageOnClickListener();
+    private Event lastEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +75,20 @@ public class GrabGridActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void handleEvent(Event event) {
+        if (event instanceof UnvisitedNeighborsEvent) {
+            UnvisitedNeighborsEvent unvisitedNeighborsEvent = (UnvisitedNeighborsEvent) event;
+            for (Coordinate coordinate : unvisitedNeighborsEvent.getNeighbors())
+                highlightPosition(new Position(coordinate), true);
+        }
+        lastEvent = event;
+    }
+
+    private void highlightPosition(Position position, boolean highlight) {
+        GridSpot gridSpot = grid.getGridSpot(position);
+        gridSpot.getImageView().setBackgroundColor(highlight ? Color.CYAN : Color.TRANSPARENT);
     }
 
     private void modifyPosition(Position position, BoxType boxType) {
@@ -106,12 +130,44 @@ public class GrabGridActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
+            getDialog("congrats you won xyz").show();
             if (!(v instanceof ImageView)) {
                 throw new UnsupportedOperationException("unexpected click");
             }
             ImageView imageView = (ImageView) v;
             Toast.makeText(getApplicationContext(), ((ImageView) v).getPosition().toString(), Toast.LENGTH_SHORT).show();
+            if (lastEvent instanceof UnvisitedNeighborsEvent) {
+                UnvisitedNeighborsEvent unvisitedNeighborsEvent = (UnvisitedNeighborsEvent) lastEvent;
+                List<Coordinate> neighbors = unvisitedNeighborsEvent.getNeighbors();
+                if (neighbors.contains(new Coordinate(imageView.getPosition().getX(), imageView.getPosition().getY()))) {
+                    for (Coordinate coordinate : neighbors) {
+                        highlightPosition(new Position(coordinate), false);
+                    }
+                    lastEvent = null;
+                    // TODO call Maze to handle the prize, etc;
+                    getDialog("congrats you won xyz").show();
+                }
+            }
         }
+    }
+
+    private Dialog getDialog(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Congrats");
+        builder.setMessage(message);
+        builder.setPositiveButton("Thank you", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Really!?", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        return builder.create();
     }
 
     private int getImageForBox(GridSpot gridSpot) {
@@ -199,6 +255,11 @@ public class GrabGridActivity extends AppCompatActivity {
     public class Position {
         private final int x;
         private final int y;
+
+        public Position(Coordinate coordinate) {
+            this.x = coordinate.getRow();
+            this.y = coordinate.getColumn();
+        }
     }
 
     public class ImageView extends AppCompatImageView {
