@@ -1,4 +1,4 @@
-package com.example.grabgrid.handler;
+package com.example.grabgrid.Handler;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.grabgrid.model.Transaction;
-import com.example.grabgrid.model.User;
+import com.example.grabgrid.Model.Transaction;
+import com.example.grabgrid.Model.User;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
         db.execSQL(CREATION_TABLE);
 
-        db.close();
+
     }
 
     @Override
@@ -62,21 +62,21 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TXN_TABLE_NAME);
         this.onCreate(db);
-        db.close();
+
     }
 
     public void deleteOneUser(User user) {
         // Get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(USER_TABLE_NAME, "userId = ?", new String[] { String.valueOf(user.getUserId()) });
-        db.close();
+
     }
 
     public void deleteOneTxn(Transaction txn) {
         // Get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TXN_TABLE_NAME, "txnId = ?", new String[] { String.valueOf(txn.getTxnId()) });
-        db.close();
+
     }
 
 
@@ -105,7 +105,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         transaction.setUserId(Integer.parseInt(cursor.getString(1)));
         transaction.setService(cursor.getString(2));
         transaction.setAmount(Integer.parseInt(cursor.getString(3)));
-        db.close();
+
         return transaction;
     }
 
@@ -134,7 +134,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         user.setUsername(cursor.getString(1));
         user.setPassword(cursor.getString(2));
         user.setStepsRemaining(Integer.parseInt(cursor.getString(3)));
-        db.close();
+
         return user;
     }
 
@@ -156,7 +156,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
                 users.add(user);
             } while (cursor.moveToNext());
         }
-        db.close();
+
         return users;
     }
 
@@ -178,7 +178,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
                 transactions.add(transaction);
             } while (cursor.moveToNext());
         }
-        db.close();
+
         return transactions;
     }
 
@@ -190,7 +190,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         values.put(TXN_KEY_AMOUNT, txn.getAmount());
         // insert
         db.insert(TXN_TABLE_NAME,null, values);
-        db.close();
+
     }
 
     public void addUser(User user) {
@@ -201,7 +201,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         values.put(USER_KEY_STEPS_REMAINING, user.getStepsRemaining());
         // insert
         db.insert(USER_TABLE_NAME,null, values);
-        db.close();
+
     }
 
     public int updateUser(User user) {
@@ -216,7 +216,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
                 "userId = ?", // selections
                 new String[] { String.valueOf(user.getUserId()) });
 
-        db.close();
+
 
         return i;
     }
@@ -233,7 +233,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
                 "txnId = ?", // selections
                 new String[] { String.valueOf(txn.getTxnId()) });
 
-        db.close();
+
 
         return i;
     }
@@ -259,7 +259,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         }
 
         user.setUserId(Integer.parseInt(cursor.getString(0)));
-        db.close();
+
         return true;
     }
 

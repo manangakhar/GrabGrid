@@ -12,8 +12,8 @@ import androidx.appcompat.widget.Toolbar;
 
 
 import com.example.grabgrid.Constants.Constants;
-import com.example.grabgrid.model.Transaction;
-import com.example.grabgrid.model.User;
+import com.example.grabgrid.Model.Transaction;
+import com.example.grabgrid.Model.User;
 import com.google.android.material.snackbar.Snackbar;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 

@@ -1,10 +1,9 @@
 package com.example.grabgrid.Constants;
 
-import android.app.Activity;
 import android.content.Context;
 
-import com.example.grabgrid.handler.SQLiteDatabaseHandler;
-import com.example.grabgrid.model.User;
+import com.example.grabgrid.Handler.SQLiteDatabaseHandler;
+import com.example.grabgrid.Model.User;
 
 public class Constants {
 

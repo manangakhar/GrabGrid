@@ -1,4 +1,4 @@
-package com.example.grabgrid.model;
+package com.example.grabgrid.Model;
 
 import java.io.Serializable;
 

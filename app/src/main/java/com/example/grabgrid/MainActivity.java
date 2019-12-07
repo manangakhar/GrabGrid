@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.grabgrid.Constants.Constants;
-import com.example.grabgrid.model.User;
+import com.example.grabgrid.Model.User;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
