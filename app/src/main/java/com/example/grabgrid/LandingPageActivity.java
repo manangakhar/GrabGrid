@@ -2,9 +2,12 @@ package com.example.grabgrid;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +26,13 @@ public class LandingPageActivity extends AppCompatActivity {
     private MaterialSpinner serviceSpinner;
     private MaterialSpinner coutrySpinner;
     private User user;
+    private TextView chiLvl;
+    private TextView welcomeUser;
+
+    private ProgressBar progressBar;
+    private int progressStatus = 0;
+    private TextView textView;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +44,24 @@ public class LandingPageActivity extends AppCompatActivity {
         getSupportActionBar().setLogo(R.drawable.grab);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        amount = (EditText)findViewById(R.id.amount);
-
         user = (User) getIntent().getSerializableExtra("user");
         Toast.makeText(getApplicationContext(), user.getUsername() + " logged in", Toast.LENGTH_SHORT).show();
+
+        welcomeUser = (TextView) findViewById(R.id.welcome);
+        welcomeUser.setText(welcomeUser.getText()+" "+user.getUsername());
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        chiLvl = (TextView) findViewById(R.id.chiLvl);
+        chiLvl.setText(chiLvl.getText()+" "+(int)user.getChiLvl()/100);
+        progressStatus = user.getChiLvl()%100;
+        progressBar.setProgress(user.getChiLvl()%100);
+
+
+        amount = (EditText)findViewById(R.id.amount);
+
+
+
 
         coutrySpinner = (MaterialSpinner) findViewById(R.id.coutrySpinner);
         coutrySpinner.setItems("Malaysia", "Cambodia", "Indonesia", "Myanmar", "the Philippines", "Singapore", "Thailand", "Vietnam");
@@ -65,6 +89,7 @@ public class LandingPageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String amountStr = amount.getText().toString();
+                int chiYearned = 0;
 
                 if(amountStr==null || "".equalsIgnoreCase(amountStr)){
                     Toast.makeText(getApplicationContext(), "Amount Cannot be Empty", Toast.LENGTH_SHORT).show();
@@ -77,6 +102,16 @@ public class LandingPageActivity extends AppCompatActivity {
                     return;
                 }
 
+                if(amountInt>200){
+                    chiYearned=20;
+                }else{
+                    chiYearned=10;
+                }
+
+                int currentLvlPoints = user.getChiLvl()%100;
+                startProgressChange(currentLvlPoints,chiYearned);
+                chiLvl.setText("Lvl-"+String.valueOf(((int)(user.getChiLvl()+chiYearned)/100)));
+
                 String service = serviceSpinner.getItems().get(serviceSpinner.getSelectedIndex()).toString();
                 Transaction txn = new Transaction();
                 txn.setUserId(user.getUserId());
@@ -85,15 +120,52 @@ public class LandingPageActivity extends AppCompatActivity {
                 Constants.db.addTransaction(txn);
 
                 user.setStepsRemaining(user.getStepsRemaining()+1);
+                user.setChiLvl(user.getChiLvl()+chiYearned);
                 Constants.db.updateUser(user);
+
+                Toast.makeText(getApplicationContext(), "Payment Made", Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(getApplicationContext(), GrabGridActivity.class);
                 intent.putExtra("user", user);
                 intent.putExtra("transaction", txn);
+                intent.putExtra("chiYearned", chiYearned);
                 startActivity(intent);
             }
         });
 
 
+    }
+
+    public void startProgressChange(final int chiLvl, final int chiYearned){
+
+        new Thread(new Runnable() {
+            public void run() {
+                int sum = chiLvl+chiYearned;
+                while (progressStatus <= sum) {
+                    progressStatus += 1;
+                    // Update the progress bar and display the
+                    //current value in the text view
+                    handler.post(new Runnable() {
+                        public void run() {
+                            progressBar.setProgress(progressStatus);
+                            //textView.setText(progressStatus+"/"+progressBar.getMax());
+                        }
+                    });
+
+                    if(progressBar.getProgress()>=100){
+                        progressBar.setProgress(0);
+                        progressStatus = 0;
+                        sum=sum%100;
+                    }
+
+                    try {
+                        // Sleep for 200 milliseconds.
+                        Thread.sleep(30);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 }

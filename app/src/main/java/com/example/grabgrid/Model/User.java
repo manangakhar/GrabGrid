@@ -7,14 +7,16 @@ public class User implements Serializable {
    private String username;
    private String password;
    private int stepsRemaining;
+   private int chiLvl;
 
     public User(){}
 
-    public User(int userId, String username, String password, int stepsRemaining) {
+    public User(int userId, String username, String password, int stepsRemaining, int chiLvl) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.stepsRemaining = stepsRemaining;
+        this.chiLvl = chiLvl;
     }
 
     public int getUserId() {
@@ -49,6 +51,14 @@ public class User implements Serializable {
         this.stepsRemaining = stepsRemaining;
     }
 
+    public int getChiLvl() {
+        return chiLvl;
+    }
+
+    public void setChiLvl(int chiLvl) {
+        this.chiLvl = chiLvl;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -56,6 +66,7 @@ public class User implements Serializable {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", stepsRemaining=" + stepsRemaining +
+                ", chiLvl=" + chiLvl +
                 '}';
     }
 }

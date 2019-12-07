@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.grabgrid.Constants.Constants;
 import com.example.grabgrid.Model.Transaction;
 import com.example.grabgrid.Model.User;
 
@@ -22,7 +23,8 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     private static final String USER_KEY_USERNAME = "username";
     private static final String USER_KEY_PASSWORD = "password";
     private static final String USER_KEY_STEPS_REMAINING = "stepsRemaining";
-    private static final String[] COLUMNS_USER = {USER_KEY_ID, USER_KEY_USERNAME, USER_KEY_PASSWORD, USER_KEY_STEPS_REMAINING};
+    private static final String USER_KEY_CHI_LVL = "chiLvl";
+    private static final String[] COLUMNS_USER = {USER_KEY_ID, USER_KEY_USERNAME, USER_KEY_PASSWORD, USER_KEY_STEPS_REMAINING, USER_KEY_CHI_LVL};
 
     private static final String TXN_TABLE_NAME = "Transactions";
     private static final String TXN_KEY_ID = "txnId";
@@ -40,7 +42,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
         String CREATION_TABLE = "CREATE TABLE if not exists Users ( "
                 + "userId INTEGER PRIMARY KEY AUTOINCREMENT, " + "username TEXT, "
-                + "password TEXT, " + "stepsRemaining INTEGER)";
+                + "password TEXT, " + "stepsRemaining INTEGER, " + "chiLvl INTEGER)";
 
         db.execSQL(CREATION_TABLE);
 
@@ -50,19 +52,22 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
         db.execSQL(CREATION_TABLE);
 
+        //create one user
+        User userDefault = new User();
+        userDefault.setUsername("m2l2");
+        userDefault.setPassword("password");
+        Constants.db.addUser(userDefault);
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // you can implement here migration process
-        /*if (newVersion > oldVersion) {
-            db.execSQL("Alter TABLE Users add column stepsRemaining INTEGER");
-        }*/
-        db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + TXN_TABLE_NAME);
-        this.onCreate(db);
-
+        if (newVersion > oldVersion) {
+            db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + TXN_TABLE_NAME);
+            this.onCreate(db);
+        }
     }
 
     public void deleteOneUser(User user) {
@@ -134,6 +139,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         user.setUsername(cursor.getString(1));
         user.setPassword(cursor.getString(2));
         user.setStepsRemaining(Integer.parseInt(cursor.getString(3)));
+        user.setChiLvl(Integer.parseInt(cursor.getString(4)));
 
         return user;
     }
@@ -153,6 +159,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
                 user.setUsername(cursor.getString(1));
                 user.setPassword(cursor.getString(2));
                 user.setStepsRemaining(Integer.parseInt(cursor.getString(3)));
+                user.setChiLvl(Integer.parseInt(cursor.getString(4)));
                 users.add(user);
             } while (cursor.moveToNext());
         }
@@ -199,6 +206,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         values.put(USER_KEY_USERNAME, user.getUsername());
         values.put(USER_KEY_PASSWORD, user.getPassword());
         values.put(USER_KEY_STEPS_REMAINING, user.getStepsRemaining());
+        values.put(USER_KEY_CHI_LVL, user.getChiLvl());
         // insert
         db.insert(USER_TABLE_NAME,null, values);
 
@@ -210,6 +218,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         values.put(USER_KEY_USERNAME, user.getUsername());
         values.put(USER_KEY_PASSWORD, user.getPassword());
         values.put(USER_KEY_STEPS_REMAINING, user.getStepsRemaining());
+        values.put(USER_KEY_CHI_LVL, user.getChiLvl());
 
         int i = db.update(USER_TABLE_NAME, // table
                 values, // column/value
@@ -259,6 +268,8 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         }
 
         user.setUserId(Integer.parseInt(cursor.getString(0)));
+        user.setStepsRemaining(Integer.parseInt(cursor.getString(3)));
+        user.setChiLvl(Integer.parseInt(cursor.getString(4)));
 
         return true;
     }

@@ -12,12 +12,6 @@ public class Constants {
     public static void initialize(Context context){
 
         db = new SQLiteDatabaseHandler(context);
-
-        //create one user
-        User userDefault = new User();
-        userDefault.setUsername("m2l2");
-        userDefault.setPassword("password");
-        Constants.db.addUser(userDefault);
         //db.onUpgrade(db.getWritableDatabase(), 0, 1);
     }
     
