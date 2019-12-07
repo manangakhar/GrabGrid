@@ -5,6 +5,8 @@ import com.example.grabgrid.Enums.MazeType;
 import com.example.grabgrid.Interfaces.BoxBuilder;
 import com.example.grabgrid.Interfaces.MazeBuilder;
 
+import java.util.Arrays;
+
 import static com.example.grabgrid.Enums.BoxType.*;
 
 public class SimpleMazeBuilder implements MazeBuilder {
@@ -66,13 +68,66 @@ public class SimpleMazeBuilder implements MazeBuilder {
             }
         }
 
-        this.maze = Maze.builder().currentPosition(midCoordinate).mazeType(MazeType.SIMPLE).boxes(boxes)
+        this.maze = Maze.builder().currentPosition(midCoordinate).mazeType(MazeType.SIMPLE)
+                .boxes(buildNeighbours(boxes))
                 .size(size).build();
     }
 
     @Override
     public Maze getMaze() {
         return this.maze;
+    }
+
+    public final Box[][] buildNeighbours(Box boxes[][]) {
+        // Pattern
+        // First column
+        boxes[2][0].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(0).build()));
+        boxes[4][0].setNeighbours(Arrays.asList(Coordinate.builder().row(2).column(0).build()
+                ,Coordinate.builder().row(6).column(0).build()));
+        boxes[6][0].setNeighbours(Arrays.asList(Coordinate.builder().row(8).column(0).build()));
+
+        // mid column
+        boxes[0][2].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(0).build()));
+        boxes[2][2].setNeighbours(Arrays.asList(Coordinate.builder().row(2).column(0).build(),
+                Coordinate.builder().row(0).column(2).build()));
+        boxes[4][2].setNeighbours(Arrays.asList(Coordinate.builder().row(4).column(2).build(),
+                Coordinate.builder().row(2).column(2).build(),
+                Coordinate.builder().row(6).column(2).build()));
+        boxes[6][2].setNeighbours(Arrays.asList(Coordinate.builder().row(6).column(0).build(),
+                Coordinate.builder().row(8).column(2).build()));
+        boxes[8][2].setNeighbours(Arrays.asList(Coordinate.builder().row(8).column(0).build()));
+
+        // mid column
+        boxes[0][4].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(2).build()));
+        boxes[2][4].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(4).build(),
+                Coordinate.builder().row(2).column(2).build()));
+        boxes[4][4].setNeighbours(Arrays.asList(Coordinate.builder().row(4).column(2).build(),
+                Coordinate.builder().row(4).column(6).build(),
+                Coordinate.builder().row(6).column(4).build(),
+                Coordinate.builder().row(2).column(4).build()));
+        boxes[6][4].setNeighbours(Arrays.asList(Coordinate.builder().row(6).column(2).build(),
+                Coordinate.builder().row(8).column(4).build()));
+        boxes[8][4].setNeighbours(Arrays.asList(Coordinate.builder().row(8).column(2).build(),
+                Coordinate.builder().row(8).column(6).build()));
+
+        // mid column
+        boxes[0][6].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(8).build()));
+        boxes[2][6].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(6).build(),
+                Coordinate.builder().row(2).column(8).build()));
+        boxes[4][6].setNeighbours(Arrays.asList(Coordinate.builder().row(2).column(6).build(),
+                Coordinate.builder().row(6).column(6).build(),
+                Coordinate.builder().row(4).column(8).build()));
+        boxes[6][6].setNeighbours(Arrays.asList(Coordinate.builder().row(6).column(8).build(),
+                Coordinate.builder().row(8).column(6).build()));
+        boxes[8][6].setNeighbours(Arrays.asList(Coordinate.builder().row(8).column(8).build()));
+
+        // last column
+        boxes[2][8].setNeighbours(Arrays.asList(Coordinate.builder().row(0).column(8).build()));
+        boxes[4][8].setNeighbours(Arrays.asList(Coordinate.builder().row(2).column(8).build()
+                ,Coordinate.builder().row(6).column(8).build()));
+        boxes[6][8].setNeighbours(Arrays.asList(Coordinate.builder().row(8).column(8).build()));
+
+        return boxes;
     }
 
     private Box buildEmptyBox(int r, int c, BoxType boxType) {
