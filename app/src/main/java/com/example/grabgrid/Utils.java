@@ -1,6 +1,9 @@
 package com.example.grabgrid;
 
-import static com.example.grabgrid.BoxType.*;
+
+import com.example.grabgrid.Enums.BoxType;
+
+import static com.example.grabgrid.Enums.BoxType.*;
 
 public class Utils {
 

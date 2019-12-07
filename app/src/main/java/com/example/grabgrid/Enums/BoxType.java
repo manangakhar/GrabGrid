@@ -1,20 +1,26 @@
 package com.example.grabgrid.Enums;
 
-public enum BoxType {
-    START,
-    RIGHT,
-    DOWN,
-    LEFT,
-    UP,
-    VISITED,
-    UNVISITED,
-    UNVISITED_END,
-    TRANSPORT,
-    PAY,
-    FOOD,
-    BLANK,
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-    ARROW,
-    REWARD,
-    EMPTY
+@Getter
+@AllArgsConstructor
+public enum BoxType {
+    START("0"),
+    RIGHT(">"),
+    DOWN("v"),
+    LEFT("<"),
+    UP("^"),
+    VISITED("X"),
+    UNVISITED("O"),
+    UNVISITED_END("T"),
+    TRANSPORT("R"),
+    PAY("P"),
+    FOOD("F"),
+    MOVIE("M"),
+    OPTION("?"),
+    BLANK(" ");
+
+    private final String representation;
 }
+

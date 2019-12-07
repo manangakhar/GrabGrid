@@ -15,7 +15,7 @@ public class SimpleMazeBuilder implements MazeBuilder {
                     {UP, BLANK, UP, BLANK, UP, BLANK, UP, BLANK, UP},
                     {UNVISITED, LEFT, UNVISITED, LEFT, UNVISITED, RIGHT, UNVISITED, RIGHT, UNVISITED},
                     {UP, BLANK, UP, BLANK, UP, BLANK, UP, BLANK, UP},
-                    {UNVISITED, LEFT, UNVISITED, LEFT, START, RIGHT, UNVISITED, RIGHT, UNVISITED},
+                    {UNVISITED, LEFT, VISITED, LEFT, START, RIGHT, UNVISITED, RIGHT, UNVISITED},
                     {DOWN, BLANK, DOWN, BLANK, DOWN, BLANK, DOWN, BLANK, DOWN},
                     {UNVISITED, LEFT, UNVISITED, LEFT, UNVISITED, RIGHT, UNVISITED, RIGHT, UNVISITED},
                     {DOWN, BLANK, DOWN, BLANK, DOWN, BLANK, DOWN, BLANK, DOWN},
@@ -27,35 +27,41 @@ public class SimpleMazeBuilder implements MazeBuilder {
         int cl = size.getColumns();
         int row = size.getRows();
         Box[][] boxes = new Box[row][cl];
-        Coordinate midCoordinate = Coordinate.builder().row(size.getRows()/2)
-                .column(size.getColumns()/2).build();
+        Coordinate midCoordinate = Coordinate.builder().row(size.getRows() / 2)
+                .column(size.getColumns() / 2).build();
 
-        for(int i = 0; i < size.getRows(); ++i) {
-            for(int j = 0; j < size.getColumns(); ++j) {
+        for (int i = 0; i < size.getRows(); ++i) {
+            for (int j = 0; j < size.getColumns(); ++j) {
                 switch (initialGrid[i][j]) {
                     case START:
-                        boxes[i][j] = buildEmptyBox(i, j, BoxType.START);
+                        boxes[i][j] = buildEmptyBox(i, j, START);
                         break;
                     case UNVISITED_END:
                         boxes[i][j] = buildTerminalEndBox(i, j, UNVISITED_END);
                         break;
                     case UP:
-                        boxes[i][j] = buildArrowBox(i, j, BoxType.UP);
+                        boxes[i][j] = buildArrowBox(i, j, UP);
                         break;
                     case DOWN:
-                        boxes[i][j] = buildArrowBox(i, j, BoxType.DOWN);
+                        boxes[i][j] = buildArrowBox(i, j, DOWN);
                         break;
                     case LEFT:
-                        boxes[i][j] = buildArrowBox(i, j, BoxType.LEFT);
+                        boxes[i][j] = buildArrowBox(i, j, LEFT);
                         break;
                     case RIGHT:
-                        boxes[i][j] = buildArrowBox(i, j, BoxType.RIGHT);
+                        boxes[i][j] = buildArrowBox(i, j, RIGHT);
                         break;
                     case BLANK:
-                        boxes[i][j] = buildEmptyBox(i, j, BoxType.BLANK);
+                        boxes[i][j] = buildEmptyBox(i, j, BLANK);
+                        break;
+                    case UNVISITED:
+                        boxes[i][j] = buildEmptyBox(i, j, UNVISITED);
+                        break;
+                    case VISITED:
+                        boxes[i][j] = buildEmptyBox(i, j, VISITED);
                         break;
                     default:
-                        boxes[i][j] = buildEmptyBox(i, j, BoxType.BLANK);
+                        boxes[i][j] = buildEmptyBox(i, j, BLANK);
                 }
             }
         }

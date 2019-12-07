@@ -14,6 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.grabgrid.Entities.Box;
+import com.example.grabgrid.Entities.Maze;
+import com.example.grabgrid.Entities.Size;
+import com.example.grabgrid.Enums.BoxType;
+import com.example.grabgrid.Enums.MazeType;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -39,7 +44,7 @@ public class GrabGridActivity extends AppCompatActivity {
 
         final LinearLayout linearLayoutGrid = findViewById(R.id.gridId);
         linearLayoutGrid.invalidate();
-        grid = new Grid();
+        grid = new Grid(MazeGenerator.createMaze(new Size(ROWS, COLS), MazeType.SIMPLE));
         renderGrid(grid);
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -159,6 +164,20 @@ public class GrabGridActivity extends AppCompatActivity {
                 for (int col = 0; col < cols; col++) {
                     GridSpot gridSpot = new GridSpot();
                     gridSpot.setBoxType(initialGrid[row][col]);
+                    gridSpots[row][col] = gridSpot;
+                }
+            }
+        }
+
+        public Grid(Maze maze) {
+            this.rows = maze.getSize().getRows();
+            this.cols = maze.getSize().getColumns();
+            gridSpots = new GridSpot[rows][cols];
+            Box[][] boxes = maze.getBoxes();
+            for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < cols; col++) {
+                    GridSpot gridSpot = new GridSpot();
+                    gridSpot.setBoxType(boxes[row][col].getBoxType());
                     gridSpots[row][col] = gridSpot;
                 }
             }
