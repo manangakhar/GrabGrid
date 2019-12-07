@@ -37,7 +37,11 @@ public class MazeGenerator {
         for(int i = 0; i < maze.getSize().getRows(); ++i) {
             System.out.println();
             for(int j = 0; j < maze.getSize().getColumns(); ++j) {
-                System.out.print(boxes[i][j].getBoxType() + " ");
+                if (boxes[i][j].getNeighbours() == null) {
+                    System.out.print(" - ");
+                } else {
+                    System.out.println(boxes[i][j].getNeighbours());
+                }
             }
         }
     }
