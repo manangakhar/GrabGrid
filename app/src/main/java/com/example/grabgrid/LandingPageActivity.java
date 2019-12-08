@@ -1,5 +1,7 @@
 package com.example.grabgrid;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -34,6 +37,8 @@ public class LandingPageActivity extends AppCompatActivity {
     private TextView textView;
     private Handler handler = new Handler();
 
+    private AlertDialog.Builder builder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +48,8 @@ public class LandingPageActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setLogo(R.drawable.grab);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+
+        builder = new AlertDialog.Builder(this);
 
         user = (User) getIntent().getSerializableExtra("user");
         Toast.makeText(getApplicationContext(), user.getUsername() + " logged in", Toast.LENGTH_SHORT).show();
@@ -102,34 +109,39 @@ public class LandingPageActivity extends AppCompatActivity {
                     return;
                 }
 
-                if(amountInt>200){
-                    chiYearned=20;
-                }else{
-                    chiYearned=10;
+
+                if(amountInt==300){
+                    chiYearned=50;
+                    dialogbox(amountInt, chiYearned, amountStr);
+                }else {
+                    if(amountInt>200){
+                        chiYearned=20;
+                    }else{
+                        chiYearned=10;
+                    }
+                    int currentLvlPoints = user.getChiLvl() % 100;
+                    startProgressChange(currentLvlPoints, chiYearned);
+                    chiLvl.setText("Chi Lvl-" + String.valueOf(((int) (user.getChiLvl() + chiYearned) / 100)));
+
+                    String service = serviceSpinner.getItems().get(serviceSpinner.getSelectedIndex()).toString();
+                    Transaction txn = new Transaction();
+                    txn.setUserId(user.getUserId());
+                    txn.setService(service);
+                    txn.setAmount(Integer.parseInt(amountStr));
+                    Constants.db.addTransaction(txn);
+
+                    user.setStepsRemaining(user.getStepsRemaining() + 1);
+                    user.setChiLvl(user.getChiLvl() + chiYearned);
+                    Constants.db.updateUser(user);
+
+                    Toast.makeText(getApplicationContext(), "Payment Made", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(getApplicationContext(), GrabGridActivity.class);
+                    intent.putExtra("user", user);
+                    intent.putExtra("transaction", txn);
+                    intent.putExtra("chiYearned", chiYearned);
+                    startActivity(intent);
                 }
-
-                int currentLvlPoints = user.getChiLvl()%100;
-                startProgressChange(currentLvlPoints,chiYearned);
-                chiLvl.setText("Lvl-"+String.valueOf(((int)(user.getChiLvl()+chiYearned)/100)));
-
-                String service = serviceSpinner.getItems().get(serviceSpinner.getSelectedIndex()).toString();
-                Transaction txn = new Transaction();
-                txn.setUserId(user.getUserId());
-                txn.setService(service);
-                txn.setAmount(Integer.parseInt(amountStr));
-                Constants.db.addTransaction(txn);
-
-                user.setStepsRemaining(user.getStepsRemaining()+1);
-                user.setChiLvl(user.getChiLvl()+chiYearned);
-                Constants.db.updateUser(user);
-
-                Toast.makeText(getApplicationContext(), "Payment Made", Toast.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(getApplicationContext(), GrabGridActivity.class);
-                intent.putExtra("user", user);
-                intent.putExtra("transaction", txn);
-                intent.putExtra("chiYearned", chiYearned);
-                startActivity(intent);
             }
         });
 
@@ -167,5 +179,43 @@ public class LandingPageActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    public void dialogbox(final int amountInt, final int chiYearned, final String amountStr){
+
+        //builder.setMessage("Yay! You will receive more points due to consecutive transactions!") .setTitle("Rewards");
+
+        //Setting message manually and performing action on button click
+        builder.setMessage("Yay! You will receive more points due to consecutive transactions!")
+                .setTitle("Rewards")
+                .setCancelable(true)
+                .setPositiveButton("Wooohhoo!", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                        int currentLvlPoints = user.getChiLvl() % 100;
+                        startProgressChange(currentLvlPoints, chiYearned);
+                        chiLvl.setText("Chi Lvl-" + String.valueOf(((int) (user.getChiLvl() + chiYearned) / 100)));
+
+                        String service = serviceSpinner.getItems().get(serviceSpinner.getSelectedIndex()).toString();
+                        Transaction txn = new Transaction();
+                        txn.setUserId(user.getUserId());
+                        txn.setService(service);
+                        txn.setAmount(Integer.parseInt(amountStr));
+                        Constants.db.addTransaction(txn);
+
+                        user.setStepsRemaining(user.getStepsRemaining() + 1);
+                        user.setChiLvl(user.getChiLvl() + chiYearned);
+                        Constants.db.updateUser(user);
+
+                        Toast.makeText(getApplicationContext(), "Payment Made", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(getApplicationContext(), GrabGridActivity.class);
+                        intent.putExtra("user", user);
+                        intent.putExtra("transaction", txn);
+                        intent.putExtra("chiYearned", chiYearned);
+                        startActivity(intent);
+                    }
+                }).show();
+
     }
 }
