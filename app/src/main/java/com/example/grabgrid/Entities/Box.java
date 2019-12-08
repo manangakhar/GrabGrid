@@ -15,5 +15,6 @@ public class Box {
     private Coordinate coordinate;
     private BoxType boxType;
     private List<Coordinate> neighbours;
+    private Reward reward;
 }
 

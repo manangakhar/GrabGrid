@@ -34,12 +34,13 @@ public class Maze {
         return reachableNodes;
     }
 
-    public Reward handleClickEvent(Coordinate coordinate) {
+    public void handleClickEvent(Coordinate coordinate) {
         if (UNVISITED.equals(this.boxes[coordinate.getRow()][coordinate.getColumn()].getBoxType())
         || UNVISITED_END.equals(this.boxes[coordinate.getRow()][coordinate.getColumn()].getBoxType())) {
             this.boxes[coordinate.getRow()][coordinate.getColumn()].setBoxType(VISITED);
         }
-        return Reward.createReward();
+
+        this.boxes[coordinate.getRow()][coordinate.getColumn()].setReward(Reward.createReward());
     }
 
     private List<Coordinate> getUnVisitedNodes(List<Coordinate> coordinates) {
