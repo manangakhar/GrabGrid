@@ -1,5 +1,7 @@
 package com.example.grabgrid;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,6 +11,8 @@ import com.example.grabgrid.Model.User;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String username = ((EditText)findViewById(R.id.usernameText)).getText().toString();
                 String password = ((EditText)findViewById(R.id.passwordText)).getText().toString();
-                User user = new User();
+                final User user = new User();
 
 
                 if(username==null || "".equalsIgnoreCase(username)){
@@ -53,9 +57,21 @@ public class MainActivity extends AppCompatActivity {
 
 
                 if(Constants.db.validateUser(user)){
-                    Intent intent = new Intent(getApplicationContext(), LandingPageActivity.class);
-                    intent.putExtra("user", user);
-                    startActivity(intent);
+                    final ProgressDialog dialog = ProgressDialog.show(MainActivity.this, "",
+                            "Loading. Please wait...", true);
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialog.dismiss();
+                            Intent intent = new Intent(getApplicationContext(), LandingPageActivity.class);
+                            intent.putExtra("user", user);
+                            startActivity(intent);
+                        }
+                    }, 2000);
+
+
                 }else{
                     Toast.makeText(getApplicationContext(),"Invalid Credentials!", Toast. LENGTH_SHORT).show();
                     return;

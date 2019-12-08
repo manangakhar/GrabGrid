@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:orientation="horizontal"
+    android:layout_height="60dp"
+    android:gravity="center">
+    <com.github.rahatarmanahmed.cpv.CircularProgressView xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/progress_view"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        app:cpv_animAutostart="true"
+        app:cpv_indeterminate="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="Loading..."
+        android:textSize="30dp"
+        android:textColor="?attr/colorPrimary"/>
+
+</LinearLayout>

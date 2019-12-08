@@ -1,6 +1,7 @@
 package com.example.grabgrid;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -134,6 +135,7 @@ public class LandingPageActivity extends AppCompatActivity {
                     }
                     int currentLvlPoints = user.getChiLvl() % 100;
                     startProgressChange(currentLvlPoints, chiYearned);
+
                     chiLvl.setText("Chi Lvl-" + String.valueOf(((int) (user.getChiLvl() + chiYearned) / 100)));
 
                     String service = serviceSpinner.getItems().get(serviceSpinner.getSelectedIndex()).toString();
@@ -149,10 +151,18 @@ public class LandingPageActivity extends AppCompatActivity {
 
                     Toast.makeText(getApplicationContext(), "Payment Made", Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(getApplicationContext(), GrabGridActivity.class);
-                    intent.putExtra("transaction", txn);
-                    intent.putExtra("chiYearned", chiYearned);
-                    startActivity(intent);
+                    final ProgressDialog dialogPop = ProgressDialog.show(LandingPageActivity.this, "",
+                            "Loading. Please wait...", true);
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogPop.dismiss();
+                            Intent intent = new Intent(getApplicationContext(), GrabGridActivity.class);
+                            startActivity(intent);
+                        }
+                    }, 2000);
                 }
             }
         });
@@ -184,7 +194,7 @@ public class LandingPageActivity extends AppCompatActivity {
 
                     try {
                         // Sleep for 200 milliseconds.
-                        Thread.sleep(30);
+                        Thread.sleep(40);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -203,8 +213,12 @@ public class LandingPageActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .setPositiveButton("Wooohhoo!", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+
                         int currentLvlPoints = user.getChiLvl() % 100;
                         startProgressChange(currentLvlPoints, chiYearned);
+
+
+
                         chiLvl.setText("Chi Lvl-" + String.valueOf(((int) (user.getChiLvl() + chiYearned) / 100)));
 
                         String service = serviceSpinner.getItems().get(serviceSpinner.getSelectedIndex()).toString();
@@ -220,11 +234,20 @@ public class LandingPageActivity extends AppCompatActivity {
 
                         Toast.makeText(getApplicationContext(), "Payment Made", Toast.LENGTH_SHORT).show();
 
-                        Intent intent = new Intent(getApplicationContext(), GrabGridActivity.class);
-                        intent.putExtra("user", user);
-                        intent.putExtra("transaction", txn);
-                        intent.putExtra("chiYearned", chiYearned);
-                        startActivity(intent);
+                        final ProgressDialog dialogPop = ProgressDialog.show(LandingPageActivity.this, "",
+                                "Loading. Please wait...", true);
+
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialogPop.dismiss();
+                                Intent intent = new Intent(getApplicationContext(), GrabGridActivity.class);
+                                startActivity(intent);
+                            }
+                        }, 2000);
+
+
                     }
                 }).show();
 
