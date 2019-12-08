@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.grabgrid.Constants.Constants;
 import com.example.grabgrid.Entities.Box;
 import com.example.grabgrid.Entities.Coordinate;
 import com.example.grabgrid.Entities.Maze;
@@ -25,6 +26,8 @@ import com.example.grabgrid.Enums.BoxType;
 import com.example.grabgrid.Enums.MazeType;
 import com.example.grabgrid.Enums.RewardType;
 import com.example.grabgrid.Event.Event;
+import com.example.grabgrid.Event.UnvisitedNeighborsEvent;
+import com.example.grabgrid.Model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -55,6 +58,12 @@ public class GrabGridActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.grab);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+
+        //user = (User) getIntent().getSerializableExtra("user");
+
         final LinearLayout linearLayoutGrid = findViewById(R.id.gridId);
         linearLayoutGrid.invalidate();
         maze = MazeGenerator.getOrCreateMaze(new Size(ROWS, COLS), MazeType.SIMPLE);
@@ -65,8 +74,14 @@ public class GrabGridActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                if(LandingPageActivity.user.getStepsRemaining()<=0){
+                    Toast.makeText(getApplicationContext(), " Make transaction to move through the GrabGrid!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
 //                ImageView imageView = imageGrid[0][0];
 //                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.bounce);
 //                animation.setRepeatCount(Animation.INFINITE);
@@ -81,12 +96,13 @@ public class GrabGridActivity extends AppCompatActivity {
                 waitForClick = true;
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void highlightPosition(Position position, boolean highlight) {
         GridSpot gridSpot = grid.getGridSpot(position);
-        gridSpot.getImageView().setColorFilter(highlight ? Color.CYAN : Color.TRANSPARENT);
+        //gridSpot.getImageView().setColorFilter(highlight ? Color : Color.TRANSPARENT);
+        gridSpot.getImageView().setImageResource(highlight ? R.drawable.goal : R.drawable.gift);
     }
 
     private void modifyPosition(Position position, BoxType boxType, Reward reward) {
@@ -134,7 +150,7 @@ public class GrabGridActivity extends AppCompatActivity {
             }
             ImageView imageView = (ImageView) v;
             GridSpot gridSpot = grid.getGridSpot(imageView.getPosition());
-            Toast.makeText(getApplicationContext(), ((ImageView) v).getPosition().toString(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), ((ImageView) v).getPosition().toString(), Toast.LENGTH_SHORT).show();
             if (waitForClick) {
                 List<Coordinate> neighbors = maze.getAllReachableCoordinates();
                 if (neighbors.contains(new Coordinate(imageView.getPosition().getX(), imageView.getPosition().getY()))) {
@@ -142,6 +158,7 @@ public class GrabGridActivity extends AppCompatActivity {
                         highlightPosition(new Position(coordinate), false);
                     }
                     waitForClick = false;
+                    reduceUserStep();
                     Reward reward = maze.handleClickEvent(new Coordinate(imageView.getPosition().getX(), imageView.getPosition().getY()));
                     String rewardMessage = generateMessageFromReward(reward);
                     getDialog(rewardMessage).show();
@@ -324,6 +341,12 @@ public class GrabGridActivity extends AppCompatActivity {
         public Position getPosition() {
             return position;
         }
+    }
+
+    public void reduceUserStep(){
+        Toast.makeText(getApplicationContext(), " Make transaction to move through the GrabGrid!", Toast.LENGTH_SHORT).show();
+        LandingPageActivity.user.setStepsRemaining(LandingPageActivity.user.getStepsRemaining()-1);
+        Constants.db.updateUser(LandingPageActivity.user);
     }
 
 }

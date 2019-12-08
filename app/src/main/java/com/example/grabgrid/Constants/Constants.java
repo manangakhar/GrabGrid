@@ -12,7 +12,7 @@ public class Constants {
     public static void initialize(Context context){
 
         db = new SQLiteDatabaseHandler(context);
-        db.onUpgrade(db.getWritableDatabase(), 0, 1);
+        //db.onUpgrade(db.getWritableDatabase(), 0, 1);
     }
     
 }

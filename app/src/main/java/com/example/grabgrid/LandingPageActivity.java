@@ -18,17 +18,21 @@ import androidx.appcompat.widget.Toolbar;
 
 
 import com.example.grabgrid.Constants.Constants;
+import com.example.grabgrid.Entities.Coordinate;
 import com.example.grabgrid.Model.Transaction;
 import com.example.grabgrid.Model.User;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+
+import java.util.List;
 
 public class LandingPageActivity extends AppCompatActivity {
 
     private EditText amount;
     private MaterialSpinner serviceSpinner;
     private MaterialSpinner coutrySpinner;
-    private User user;
+    public static User user;
     private TextView chiLvl;
     private TextView welcomeUser;
 
@@ -67,7 +71,16 @@ public class LandingPageActivity extends AppCompatActivity {
 
         amount = (EditText)findViewById(R.id.amount);
 
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                Intent intent = new Intent(getApplicationContext(), GrabGridActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
 
         coutrySpinner = (MaterialSpinner) findViewById(R.id.coutrySpinner);
@@ -137,7 +150,6 @@ public class LandingPageActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Payment Made", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(getApplicationContext(), GrabGridActivity.class);
-                    intent.putExtra("user", user);
                     intent.putExtra("transaction", txn);
                     intent.putExtra("chiYearned", chiYearned);
                     startActivity(intent);
@@ -191,7 +203,6 @@ public class LandingPageActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .setPositiveButton("Wooohhoo!", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        finish();
                         int currentLvlPoints = user.getChiLvl() % 100;
                         startProgressChange(currentLvlPoints, chiYearned);
                         chiLvl.setText("Chi Lvl-" + String.valueOf(((int) (user.getChiLvl() + chiYearned) / 100)));

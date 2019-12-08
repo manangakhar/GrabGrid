@@ -69,10 +69,36 @@
                     android:progressTint="?attr/colorPrimary"
                     android:progress="0" />
             </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_weight="1700"
+                android:id="@+id/grabgridText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="22dp"
+                android:layout_marginTop="5dp"
+                android:text="Grab now provide exciting new game The GrabGrid. Hurry now and u can win mulitple rewards."
+                android:textSize="12sp" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_margin="@dimen/fab_margin"
+                app:srcCompat="@drawable/gridlogo" />
+
         </LinearLayout>
 
         <com.jaredrummler.materialspinner.MaterialSpinner
-            android:layout_marginTop="30dp"
             android:id="@+id/coutrySpinner"
             android:backgroundTint="#26A96C"
             android:layout_width="match_parent"
