@@ -1,5 +1,6 @@
 package com.example.grabgrid.Entities;
 
+import com.example.grabgrid.Enums.BoxType;
 import com.example.grabgrid.Enums.MazeType;
 
 import java.util.ArrayList;
@@ -34,6 +35,10 @@ public class Maze {
     }
 
     public Reward handleClickEvent(Coordinate coordinate) {
+        if (UNVISITED.equals(this.boxes[coordinate.getRow()][coordinate.getColumn()].getBoxType())
+        || UNVISITED_END.equals(this.boxes[coordinate.getRow()][coordinate.getColumn()].getBoxType())) {
+            this.boxes[coordinate.getRow()][coordinate.getColumn()].setBoxType(VISITED);
+        }
         return Reward.createReward();
     }
 
