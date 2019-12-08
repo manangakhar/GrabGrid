@@ -1,19 +1,25 @@
 package com.example.grabgrid.Entities;
 
 import com.example.grabgrid.Enums.MazeType;
+import com.example.grabgrid.Handler.MazeFileHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static com.example.grabgrid.Enums.BoxType.UNVISITED;
 import static com.example.grabgrid.Enums.BoxType.UNVISITED_END;
 import static com.example.grabgrid.Enums.BoxType.VISITED;
 
-@Getter
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Maze {
     private Size size;
     private Coordinate currentPosition;
@@ -34,11 +40,12 @@ public class Maze {
 
     public Reward handleClickEvent(Coordinate coordinate) {
         if (UNVISITED.equals(this.boxes[coordinate.getRow()][coordinate.getColumn()].getBoxType())
-        || UNVISITED_END.equals(this.boxes[coordinate.getRow()][coordinate.getColumn()].getBoxType())) {
+                || UNVISITED_END.equals(this.boxes[coordinate.getRow()][coordinate.getColumn()].getBoxType())) {
             this.boxes[coordinate.getRow()][coordinate.getColumn()].setBoxType(VISITED);
         }
         Reward reward = Reward.createReward();
         this.boxes[coordinate.getRow()][coordinate.getColumn()].setReward(reward);
+        persist();
         return reward;
     }
 
@@ -70,4 +77,15 @@ public class Maze {
 
         return visitedNodes;
     }
+
+    public void persist() {
+        MazeFileHandler mazeFileHandler = new MazeFileHandler();
+        mazeFileHandler.save(this);
+    }
+
+    public static Maze fromFile() {
+        MazeFileHandler mazeFileHandler = new MazeFileHandler();
+        return mazeFileHandler.load();
+    }
+
 }

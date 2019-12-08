@@ -1,5 +1,6 @@
 package com.example.grabgrid;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -24,7 +25,6 @@ import com.example.grabgrid.Enums.BoxType;
 import com.example.grabgrid.Enums.MazeType;
 import com.example.grabgrid.Enums.RewardType;
 import com.example.grabgrid.Event.Event;
-import com.example.grabgrid.Event.UnvisitedNeighborsEvent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -44,9 +44,11 @@ public class GrabGridActivity extends AppCompatActivity {
     private Event lastEvent;
     private Maze maze;
     boolean waitForClick = false;
+    public static Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        activity = this;
         factor = getResources().getDisplayMetrics().density;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grab_grid);
@@ -55,7 +57,7 @@ public class GrabGridActivity extends AppCompatActivity {
 
         final LinearLayout linearLayoutGrid = findViewById(R.id.gridId);
         linearLayoutGrid.invalidate();
-        maze = MazeGenerator.createMaze(new Size(ROWS, COLS), MazeType.SIMPLE);
+        maze = MazeGenerator.getOrCreateMaze(new Size(ROWS, COLS), MazeType.SIMPLE);
         grid = new Grid(maze);
         renderGrid(grid);
 
@@ -144,6 +146,8 @@ public class GrabGridActivity extends AppCompatActivity {
                     String rewardMessage = generateMessageFromReward(reward);
                     getDialog(rewardMessage).show();
                     modifyPosition(imageView.getPosition(), BoxType.VISITED, reward);
+                    if (maze.getAllReachableCoordinates().isEmpty())
+                        getDialog("congrats, you finished the maze").show();
                     return;
                 }
             }

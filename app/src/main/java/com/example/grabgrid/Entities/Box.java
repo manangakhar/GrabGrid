@@ -4,13 +4,17 @@ import com.example.grabgrid.Enums.BoxType;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Data
 @Builder
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Box {
     private Coordinate coordinate;
     private BoxType boxType;

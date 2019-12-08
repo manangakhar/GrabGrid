@@ -3,11 +3,16 @@ package com.example.grabgrid.Entities;
 import com.example.grabgrid.Enums.RewardType;
 import com.example.grabgrid.RandomRewardGenerator;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Data
 @Builder
-@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Reward {
     RewardType rewardType;
     int rewardPoints;
