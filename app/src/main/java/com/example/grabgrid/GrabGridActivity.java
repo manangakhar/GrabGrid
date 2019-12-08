@@ -6,10 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -20,10 +18,11 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.grabgrid.Entities.Box;
 import com.example.grabgrid.Entities.Coordinate;
 import com.example.grabgrid.Entities.Maze;
+import com.example.grabgrid.Entities.Reward;
 import com.example.grabgrid.Entities.Size;
 import com.example.grabgrid.Enums.BoxType;
 import com.example.grabgrid.Enums.MazeType;
-import com.example.grabgrid.Event.ClickEvent;
+import com.example.grabgrid.Enums.RewardType;
 import com.example.grabgrid.Event.Event;
 import com.example.grabgrid.Event.UnvisitedNeighborsEvent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -40,9 +39,11 @@ public class GrabGridActivity extends AppCompatActivity {
     private static final int BOX_DPI = 45;
     private static final int ROWS = 9;
     private static final int COLS = 9;
-    public static Grid grid;
+    public Grid grid;
     private ImageOnClickListener imageOnClickListener = new ImageOnClickListener();
     private Event lastEvent;
+    private Maze maze;
+    boolean waitForClick = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,8 @@ public class GrabGridActivity extends AppCompatActivity {
 
         final LinearLayout linearLayoutGrid = findViewById(R.id.gridId);
         linearLayoutGrid.invalidate();
-        grid = new Grid(MazeGenerator.createMaze(new Size(ROWS, COLS), MazeType.SIMPLE));
+        maze = MazeGenerator.createMaze(new Size(ROWS, COLS), MazeType.SIMPLE);
+        grid = new Grid(maze);
         renderGrid(grid);
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -71,30 +73,25 @@ public class GrabGridActivity extends AppCompatActivity {
 //                ImageView viewById = (ImageView) findViewById(R.id.sonic);
 //                AnimationDrawable d = (AnimationDrawable) viewById.getDrawable();
 //                d.start();
-                modifyPosition(new Position(2, 0), BoxType.VISITED);
+                List<Coordinate> allReachableCoordinates = maze.getAllReachableCoordinates();
+                for (Coordinate coordinate : allReachableCoordinates)
+                    highlightPosition(new Position(coordinate), true);
+                waitForClick = true;
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    private void handleEvent(Event event) {
-        if (event instanceof UnvisitedNeighborsEvent) {
-            UnvisitedNeighborsEvent unvisitedNeighborsEvent = (UnvisitedNeighborsEvent) event;
-            for (Coordinate coordinate : unvisitedNeighborsEvent.getNeighbors())
-                highlightPosition(new Position(coordinate), true);
-        }
-        lastEvent = event;
-    }
-
     private void highlightPosition(Position position, boolean highlight) {
         GridSpot gridSpot = grid.getGridSpot(position);
-        gridSpot.getImageView().setBackgroundColor(highlight ? Color.CYAN : Color.TRANSPARENT);
+        gridSpot.getImageView().setColorFilter(highlight ? Color.CYAN : Color.TRANSPARENT);
     }
 
-    private void modifyPosition(Position position, BoxType boxType) {
+    private void modifyPosition(Position position, BoxType boxType, Reward reward) {
         GridSpot gridSpot = grid.getGridSpot(position);
         gridSpot.setBoxType(boxType);
-        gridSpot.getImageView().setImageResource(getImageForBox(gridSpot));
+        gridSpot.setReward(reward);
+        setImageForBox(gridSpot.getImageView(), gridSpot);
     }
 
     public void renderGrid(Grid inputGrid) {
@@ -114,7 +111,7 @@ public class GrabGridActivity extends AppCompatActivity {
                 ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams((int) (BOX_DPI * factor), (int) (BOX_DPI * factor));
                 imageView.setLayoutParams(layoutParams);
                 GridSpot gridSpot = inputGrid.getGridSpot(new Position(row, col));
-                imageView.setImageResource(getImageForBox(gridSpot));
+                setImageForBox(imageView, gridSpot);
                 imageView.setOnClickListener(imageOnClickListener);
                 // set the image grid
                 gridSpot.setImageView(imageView);
@@ -130,25 +127,35 @@ public class GrabGridActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            getDialog("congrats you won xyz").show();
             if (!(v instanceof ImageView)) {
                 throw new UnsupportedOperationException("unexpected click");
             }
             ImageView imageView = (ImageView) v;
+            GridSpot gridSpot = grid.getGridSpot(imageView.getPosition());
             Toast.makeText(getApplicationContext(), ((ImageView) v).getPosition().toString(), Toast.LENGTH_SHORT).show();
-            if (lastEvent instanceof UnvisitedNeighborsEvent) {
-                UnvisitedNeighborsEvent unvisitedNeighborsEvent = (UnvisitedNeighborsEvent) lastEvent;
-                List<Coordinate> neighbors = unvisitedNeighborsEvent.getNeighbors();
+            if (waitForClick) {
+                List<Coordinate> neighbors = maze.getAllReachableCoordinates();
                 if (neighbors.contains(new Coordinate(imageView.getPosition().getX(), imageView.getPosition().getY()))) {
                     for (Coordinate coordinate : neighbors) {
                         highlightPosition(new Position(coordinate), false);
                     }
-                    lastEvent = null;
-                    // TODO call Maze to handle the prize, etc;
-                    getDialog("congrats you won xyz").show();
+                    waitForClick = false;
+                    Reward reward = maze.handleClickEvent(new Coordinate(imageView.getPosition().getX(), imageView.getPosition().getY()));
+                    String rewardMessage = generateMessageFromReward(reward);
+                    getDialog(rewardMessage).show();
+                    modifyPosition(imageView.getPosition(), BoxType.VISITED, reward);
+                    return;
                 }
             }
+            if (null != gridSpot.getReward())
+                Toast.makeText(getApplicationContext(), generateMessageFromReward(gridSpot.getReward()), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private String generateMessageFromReward(Reward reward) {
+        return RewardType.NONE == reward.getRewardType() ? "Sorry, no reward points this time" :
+                String.format("Congrats you won %d points for %s\nThese Rewards can be claimed under MyRewards.",
+                        reward.getRewardPoints(), reward.getRewardType().toString().toLowerCase());
     }
 
     private Dialog getDialog(String message) {
@@ -170,38 +177,75 @@ public class GrabGridActivity extends AppCompatActivity {
         return builder.create();
     }
 
-    private int getImageForBox(GridSpot gridSpot) {
+    private void setImageForBox(ImageView imageView, GridSpot gridSpot) {
+        int drawableId = 0;
         switch (gridSpot.getBoxType()) {
             case START:
-                return R.drawable.tile018;
+                drawableId = R.drawable.tile018;
+                imageView.setImageResource(drawableId);
+                return;
             case UNVISITED_END:
-                return R.drawable.unvisited;
+                drawableId = R.drawable.unvisited;
+                imageView.setImageResource(drawableId);
+                return;
             case UNVISITED:
-                return R.drawable.unvisited;
-            case VISITED:
-                return R.drawable.visited;
+                drawableId = R.drawable.gift;
+                imageView.setImageResource(drawableId);
+                return;
             case UP:
-                return R.drawable.arrow_up;
+                drawableId = R.drawable.up_arrow;
+                imageView.setImageResource(drawableId);
+                imageView.setPadding(25, 25, 25, 25);
+                return;
             case DOWN:
-                return R.drawable.arrow_down;
+                drawableId = R.drawable.down_arrow;
+                imageView.setPadding(25, 25, 25, 25);
+                imageView.setImageResource(drawableId);
+                return;
             case LEFT:
-                return R.drawable.arrow_left;
+                drawableId = R.drawable.left_arrow;
+                imageView.setPadding(25, 25, 25, 25);
+                imageView.setImageResource(drawableId);
+                return;
             case RIGHT:
-                return R.drawable.arrow_right;
+                drawableId = R.drawable.right_arrow;
+                imageView.setImageResource(drawableId);
+                imageView.setPadding(25, 25, 25, 25);
+                return;
+            case VISITED:
+                if (RewardType.NONE == gridSpot.getReward().getRewardType())
+                    imageView.setImageResource(R.drawable.circle);
+                else
+                    imageView.setImageResource(R.drawable.reward);
+                return;
             case PAY:
-                return R.drawable.pay;
+                drawableId = R.drawable.pay;
+                imageView.setImageResource(drawableId);
+                return;
             case TRANSPORT:
-                return R.drawable.transport;
+                drawableId = R.drawable.transport;
+                imageView.setImageResource(drawableId);
+                return;
             case FOOD:
-                return R.drawable.food;
+                drawableId = R.drawable.food;
+                imageView.setImageResource(drawableId);
+                return;
             case MOVIE:
-                return R.drawable.movie;
+                drawableId = R.drawable.movie;
+                imageView.setImageResource(drawableId);
+                return;
             case OPTION:
-                return R.drawable.option;
+                drawableId = R.drawable.option;
+                imageView.setImageResource(drawableId);
+                return;
             case BLANK:
-                return 0;
+                drawableId = 0;
+                imageView.setImageResource(drawableId);
+                return;
             default:
-                return R.mipmap.ic_launcher;
+                drawableId = R.mipmap.ic_launcher;
+                imageView.setImageResource(drawableId);
+                return;
         }
     }
 
@@ -233,6 +277,7 @@ public class GrabGridActivity extends AppCompatActivity {
             for (int row = 0; row < rows; row++) {
                 for (int col = 0; col < cols; col++) {
                     GridSpot gridSpot = new GridSpot();
+                    gridSpot.setReward(boxes[row][col].getReward());
                     gridSpot.setBoxType(boxes[row][col].getBoxType());
                     gridSpots[row][col] = gridSpot;
                 }
@@ -248,6 +293,7 @@ public class GrabGridActivity extends AppCompatActivity {
     public static class GridSpot {
         private BoxType boxType;
         private ImageView imageView;
+        private Reward reward;
     }
 
     @Data

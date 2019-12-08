@@ -1,12 +1,10 @@
 package com.example.grabgrid.Entities;
 
-import com.example.grabgrid.Enums.BoxType;
 import com.example.grabgrid.Enums.MazeType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,7 +24,7 @@ public class Maze {
         List<Coordinate> visitedNodes = getVisitedNodes();
         List<Coordinate> reachableNodes = new ArrayList<>();
 
-        for(Coordinate c : visitedNodes) {
+        for (Coordinate c : visitedNodes) {
             Box box = this.getBoxes()[c.getRow()][c.getColumn()];
             List<Coordinate> notVisitedNodes = getUnVisitedNodes(box.getNeighbours());
             reachableNodes.addAll(notVisitedNodes);
@@ -34,19 +32,20 @@ public class Maze {
         return reachableNodes;
     }
 
-    public void handleClickEvent(Coordinate coordinate) {
+    public Reward handleClickEvent(Coordinate coordinate) {
         if (UNVISITED.equals(this.boxes[coordinate.getRow()][coordinate.getColumn()].getBoxType())
         || UNVISITED_END.equals(this.boxes[coordinate.getRow()][coordinate.getColumn()].getBoxType())) {
             this.boxes[coordinate.getRow()][coordinate.getColumn()].setBoxType(VISITED);
         }
-
-        this.boxes[coordinate.getRow()][coordinate.getColumn()].setReward(Reward.createReward());
+        Reward reward = Reward.createReward();
+        this.boxes[coordinate.getRow()][coordinate.getColumn()].setReward(reward);
+        return reward;
     }
 
     private List<Coordinate> getUnVisitedNodes(List<Coordinate> coordinates) {
         List<Coordinate> unVisitedNodes = new ArrayList<>();
 
-        for(Coordinate c: coordinates) {
+        for (Coordinate c : coordinates) {
             Box box = this.getBoxes()[c.getRow()][c.getColumn()];
             if (UNVISITED_END.equals(box.getBoxType())
                     || UNVISITED.equals(box.getBoxType())) {
@@ -59,9 +58,10 @@ public class Maze {
 
     private List<Coordinate> getVisitedNodes() {
         List<Coordinate> visitedNodes = new ArrayList<>();
+        visitedNodes.add(new Coordinate(4, 4));
         Size size = this.getSize();
-        for(int i = 0; i < size.getRows(); ++i) {
-            for(int j = 0; j <size.getColumns(); ++j) {
+        for (int i = 0; i < size.getRows(); ++i) {
+            for (int j = 0; j < size.getColumns(); ++j) {
                 if (VISITED.equals(this.getBoxes()[i][j].getBoxType())) {
                     visitedNodes.add(this.getBoxes()[i][j].getCoordinate());
                 }
