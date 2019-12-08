@@ -1,4 +1,9 @@
 package com.example.grabgrid.Enums;
 
-public class RewardType {
+public enum RewardType {
+    TRANSPORT,
+    PAY,
+    FOOD,
+    MOVIE,
+    NONE
 }

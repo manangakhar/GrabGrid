@@ -80,6 +80,18 @@ public class SimpleMazeBuilder implements MazeBuilder {
         return this.maze;
     }
 
+    public List<Coordinate> getAllReachableCoordinates() {
+        List<Coordinate> visitedNodes = getVisitedNodes();
+        List<Coordinate> reachableNodes = new ArrayList<>();
+
+        for(Coordinate c : visitedNodes) {
+            Box box = this.maze.getBoxes()[c.getRow()][c.getColumn()];
+            List<Coordinate> notVisitedNodes = getUnVisitedNodes(box.getNeighbours());
+            reachableNodes.addAll(notVisitedNodes);
+        }
+        return reachableNodes;
+    }
+
     private Box[][] buildNeighbours(Box boxes[][]) {
         // Pattern
         // First column
@@ -133,19 +145,6 @@ public class SimpleMazeBuilder implements MazeBuilder {
         boxes[6][8].setNeighbours(Arrays.asList(Coordinate.builder().row(8).column(8).build()));
 
         return boxes;
-    }
-
-
-    public List<Coordinate> getAllReachableCoordinates() {
-        List<Coordinate> visitedNodes = getVisitedNodes();
-        List<Coordinate> reachableNodes = new ArrayList<>();
-
-        for(Coordinate c : visitedNodes) {
-            Box box = this.maze.getBoxes()[c.getRow()][c.getColumn()];
-            List<Coordinate> notVisitedNodes = getUnVisitedNodes(box.getNeighbours());
-            reachableNodes.addAll(notVisitedNodes);
-        }
-        return reachableNodes;
     }
 
     private List<Coordinate> getUnVisitedNodes(List<Coordinate> coordinates) {
