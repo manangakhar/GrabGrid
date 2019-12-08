@@ -15,6 +15,8 @@ import java.util.List;
 
 public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
+    private static SQLiteDatabase mDefaultWritableDatabase = null;
+
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "GrabGridDB";
 
@@ -39,6 +41,10 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
+        if(mDefaultWritableDatabase==null){
+            mDefaultWritableDatabase=db;
+        }
 
         String CREATION_TABLE = "CREATE TABLE if not exists Users ( "
                 + "userId INTEGER PRIMARY KEY AUTOINCREMENT, " + "username TEXT, "
@@ -72,22 +78,28 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
     public void deleteOneUser(User user) {
         // Get reference to writable DB
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(USER_TABLE_NAME, "userId = ?", new String[] { String.valueOf(user.getUserId()) });
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
+        mDefaultWritableDatabase.delete(USER_TABLE_NAME, "userId = ?", new String[] { String.valueOf(user.getUserId()) });
 
     }
 
     public void deleteOneTxn(Transaction txn) {
         // Get reference to writable DB
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TXN_TABLE_NAME, "txnId = ?", new String[] { String.valueOf(txn.getTxnId()) });
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
+        mDefaultWritableDatabase.delete(TXN_TABLE_NAME, "txnId = ?", new String[] { String.valueOf(txn.getTxnId()) });
 
     }
 
 
     public Transaction getTxn(int txnId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TXN_TABLE_NAME, // a. table
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
+        Cursor cursor = mDefaultWritableDatabase.query(TXN_TABLE_NAME, // a. table
                 COLUMNS_TXN, // b. column names
                 " txnId = ?", // c. selections
                 new String[] { String.valueOf(txnId) }, // d. selections args
@@ -115,8 +127,10 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     }
 
     public User getUser(int userId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(USER_TABLE_NAME, // a. table
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
+        Cursor cursor = mDefaultWritableDatabase.query(USER_TABLE_NAME, // a. table
                 COLUMNS_USER, // b. column names
                 " userId = ?", // c. selections
                 new String[] { String.valueOf(userId) }, // d. selections args
@@ -148,8 +162,10 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
         List<User> users = new LinkedList<>();
         String query = "SELECT  * FROM " + USER_TABLE_NAME;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
+        Cursor cursor = mDefaultWritableDatabase.rawQuery(query, null);
         User user = null;
 
         if (cursor.moveToFirst()) {
@@ -171,8 +187,10 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
         List<Transaction> transactions = new LinkedList<>();
         String query = "SELECT  * FROM " + TXN_TABLE_NAME + "where userId=" + userId;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
+        Cursor cursor = mDefaultWritableDatabase.rawQuery(query, null);
         Transaction transaction = null;
 
         if (cursor.moveToFirst()) {
@@ -190,37 +208,43 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void addTransaction(Transaction txn) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
         ContentValues values = new ContentValues();
         values.put(TXN_KEY_USER_ID, txn.getUserId());
         values.put(TXN_KEY_SERVICE, txn.getService());
         values.put(TXN_KEY_AMOUNT, txn.getAmount());
         // insert
-        db.insert(TXN_TABLE_NAME,null, values);
+        mDefaultWritableDatabase.insert(TXN_TABLE_NAME,null, values);
 
     }
 
     public void addUser(User user) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
         ContentValues values = new ContentValues();
         values.put(USER_KEY_USERNAME, user.getUsername());
         values.put(USER_KEY_PASSWORD, user.getPassword());
         values.put(USER_KEY_STEPS_REMAINING, user.getStepsRemaining());
         values.put(USER_KEY_CHI_LVL, user.getChiLvl());
         // insert
-        db.insert(USER_TABLE_NAME,null, values);
+        mDefaultWritableDatabase.insert(USER_TABLE_NAME,null, values);
 
     }
 
     public int updateUser(User user) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
         ContentValues values = new ContentValues();
         values.put(USER_KEY_USERNAME, user.getUsername());
         values.put(USER_KEY_PASSWORD, user.getPassword());
         values.put(USER_KEY_STEPS_REMAINING, user.getStepsRemaining());
         values.put(USER_KEY_CHI_LVL, user.getChiLvl());
 
-        int i = db.update(USER_TABLE_NAME, // table
+        int i = mDefaultWritableDatabase.update(USER_TABLE_NAME, // table
                 values, // column/value
                 "userId = ?", // selections
                 new String[] { String.valueOf(user.getUserId()) });
@@ -231,13 +255,15 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     }
 
     public int updateTransaction(Transaction txn) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
         ContentValues values = new ContentValues();
         values.put(TXN_KEY_USER_ID, txn.getUserId());
         values.put(TXN_KEY_SERVICE, txn.getService());
         values.put(TXN_KEY_AMOUNT, txn.getAmount());
 
-        int i = db.update(TXN_TABLE_NAME, // table
+        int i = mDefaultWritableDatabase.update(TXN_TABLE_NAME, // table
                 values, // column/value
                 "txnId = ?", // selections
                 new String[] { String.valueOf(txn.getTxnId()) });
@@ -248,8 +274,10 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     }
 
     public Boolean validateUser(User user){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(USER_TABLE_NAME, // a. table
+        if(mDefaultWritableDatabase==null) {
+            mDefaultWritableDatabase = this.getWritableDatabase();
+        }
+        Cursor cursor = mDefaultWritableDatabase.query(USER_TABLE_NAME, // a. table
                 COLUMNS_USER, // b. column names
                 " username = ? and password = ?", // c. selections
                 new String[] { String.valueOf(user.getUsername()), String.valueOf(user.getPassword()) }, // d. selections args
